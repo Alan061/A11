@@ -1,155 +1,310 @@
+import java.awt.BorderLayout;
+import java.awt.GridLayout;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 
 public class Cardapio {
 
-    // Lista para armazenar os produtos, onde cada produto é representado por um
-    // array de String
     private static List<String[]> produtos = new ArrayList<>();
+    private static List<Cliente> clientes = new ArrayList<>();
 
     public static void main(String[] args) {
-        Scanner sc = new Scanner(System.in);
-
-        while (true) {
-            telaInicial(sc);
-        }
+        SwingUtilities.invokeLater(() -> new Cardapio().criarTelaInicial());
     }
 
-    public static void telaInicial(Scanner sc) {
-        System.out.println("Tela de Navegação");
-        System.out.println();
-        System.out.println("Cadastro de Produtos -> Digite '1' ");
-        System.out.println();
-        System.out.println("Cardápio -> Digite '2' ");
-        System.out.println();
-        System.out.println("Consultar Produto -> Digite '3' ");
-        System.out.println();
-        System.out.println("Excluir Produto -> Digite '4' ");
-        System.out.println();
-        System.out.println("Sair -> Digite '5' ");
+    public void criarTelaInicial() {
+        JFrame frame = new JFrame("Sistema de Cardápio");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(400, 400);
+        frame.setLayout(new GridLayout(0, 1));
 
-        String resposta = sc.nextLine().toLowerCase();
+        JButton btnCadastroProdutos = new JButton("Cadastro de Produtos");
+        JButton btnCardapio = new JButton("Visualizar Cardápio");
+        JButton btnCadastroClientes = new JButton("Cadastro de Clientes");
+        JButton btnAlterarProduto = new JButton("Alterar Produto");
+        JButton btnExcluirProduto = new JButton("Excluir Produto");
+        JButton btnAlterarCliente = new JButton("Alterar Cliente");
+        JButton btnExcluirCliente = new JButton("Excluir Cliente");
+        JButton btnConsultarClientes = new JButton("Consultar Clientes");
+        JButton btnSair = new JButton("Sair");
 
-        switch (resposta) {
-            case "1":
-                telaCadastro(sc);
-                break;
-            case "2":
-                visualizarCardapio();
-                break;
-            case "3":
-                consultarProduto(sc);
-                break;
-            case "4":
-                excluirProduto(sc);
-                break;
-            case "5":
-                System.out.println("Saindo do sistema. Até logo!");
-                sc.close();
-                System.exit(0);
-            default:
-                System.out.println("Opção inválida, tente novamente.");
-        }
+        btnCadastroProdutos.addActionListener(e -> telaCadastroProduto());
+        btnCardapio.addActionListener(e -> visualizarCardapio());
+        btnCadastroClientes.addActionListener(e -> telaCadastroCliente());
+        btnAlterarProduto.addActionListener(e -> alterarProduto());
+        btnExcluirProduto.addActionListener(e -> excluirProduto());
+        btnAlterarCliente.addActionListener(e -> alterarCliente());
+        btnExcluirCliente.addActionListener(e -> excluirCliente());
+        btnConsultarClientes.addActionListener(e -> consultarClientes());
+        btnSair.addActionListener(e -> System.exit(0));
+
+        frame.add(btnCadastroProdutos);
+        frame.add(btnCardapio);
+        frame.add(btnCadastroClientes);
+        frame.add(btnAlterarProduto);
+        frame.add(btnExcluirProduto);
+        frame.add(btnAlterarCliente);
+        frame.add(btnExcluirCliente);
+        frame.add(btnConsultarClientes);
+        frame.add(btnSair);
+
+        frame.setVisible(true);
     }
 
-    public static void telaCadastro(Scanner sc) {
-        System.out.println("Cadastro de Produtos: ");
+    public void telaCadastroProduto() {
+        JFrame cadastroFrame = new JFrame("Cadastro de Produtos");
+        cadastroFrame.setSize(300, 200);
+        cadastroFrame.setLayout(new GridLayout(0, 2));
 
-        // Validação do código
-        String codigo;
-        while (true) {
-            System.out.println("Digite o código do produto (6 caracteres alfanuméricos): ");
-            codigo = sc.nextLine();
-            if (codigo.matches("[a-zA-Z0-9]{6}")) {
-                break;
+        JTextField txtCodigo = new JTextField();
+        JTextField txtNome = new JTextField();
+        JTextField txtPreco = new JTextField();
+
+        cadastroFrame.add(new JLabel("Código:"));
+        cadastroFrame.add(txtCodigo);
+        cadastroFrame.add(new JLabel("Nome:"));
+        cadastroFrame.add(txtNome);
+        cadastroFrame.add(new JLabel("Preço:"));
+        cadastroFrame.add(txtPreco);
+
+        JButton btnSalvar = new JButton("Salvar");
+        btnSalvar.addActionListener(e -> {
+            String codigo = txtCodigo.getText();
+            String nome = txtNome.getText().toUpperCase();
+            String preco = txtPreco.getText();
+
+            if (codigo.matches("[a-zA-Z0-9]{6}") && nome.matches("[a-zA-Z0-9 ]{3,60}") && preco.matches("[0-9]+(\\.[0-9]{1,2})?")) {
+                String[] produto = {codigo, nome, preco, "True"};
+                produtos.add(produto);
+                JOptionPane.showMessageDialog(cadastroFrame, "Produto cadastrado com sucesso!");
+                cadastroFrame.dispose();
             } else {
-                System.out.println("Código inválido! O código deve conter exatamente 6 caracteres alfanuméricos.");
+                JOptionPane.showMessageDialog(cadastroFrame, "Dados inválidos!", "Erro", JOptionPane.ERROR_MESSAGE);
             }
-        }
+        });
 
-        // Validação do nome do produto
-        String nomeProduto;
-        while (true) {
-            System.out.println("Digite o nome do produto (3 a 60 caracteres): ");
-            nomeProduto = sc.nextLine().toUpperCase(); // Converte para caixa alta
-            if (nomeProduto.matches("[a-zA-Z0-9 ]{3,60}")) {
-                break;
-            } else {
-                System.out.println("Nome do produto inválido! Deve ter entre 3 e 60 caracteres alfanuméricos.");
-            }
-        }
-
-        // Validação do preço
-        String preco;
-        while (true) {
-            System.out.println("Digite o preço do produto (número positivo com duas casas decimais): ");
-            preco = sc.nextLine();
-            if (preco.matches("[0-9]+(\\.[0-9]{1,2})?") && Double.parseDouble(preco) > 0) {
-                break;
-            } else {
-                System.out.println("Preço inválido! Deve ser um número positivo com duas casas decimais.");
-            }
-        }
-
-        // Produto está ativo por padrão (True)
-        String ativo = "True";
-
-        // Adiciona o produto à lista de produtos
-        String[] produto = { codigo, nomeProduto, preco, ativo };
-        produtos.add(produto);
-
-        System.out.println("Produto cadastrado com sucesso!");
+        cadastroFrame.add(btnSalvar);
+        cadastroFrame.setVisible(true);
     }
 
-    public static void visualizarCardapio() {
-        System.out.println(
-                "-------------------------------------------------------------------------------------------------");
-        System.out.println("CÓDIGO        PRODUTO                                                             VALOR");
-        System.out.println(
-                "-------------------------------------------------------------------------------------------------");
+    public void visualizarCardapio() {
+        JFrame cardapioFrame = new JFrame("Cardápio");
+        cardapioFrame.setSize(400, 300);
+        cardapioFrame.setLayout(new BorderLayout());
 
-        // Exibe apenas os produtos que estão ativos (ativo == "True")
+        JTextArea textArea = new JTextArea();
+        textArea.setEditable(false);
+        StringBuilder sb = new StringBuilder();
+        sb.append("CÓDIGO\tPRODUTO\t\tVALOR\n");
+        sb.append("-----------------------------------------------------\n");
+
         for (String[] produto : produtos) {
             if (produto[3].equals("True")) {
-                System.out.printf("%-12s %-65s %.2f%n", produto[0], produto[1], Double.parseDouble(produto[2]));
+                sb.append(String.format("%-12s %-30s %.2f%n", produto[0], produto[1], Double.parseDouble(produto[2])));
             }
         }
 
-        System.out.println(
-                "-------------------------------------------------------------------------------------------------");
+        textArea.setText(sb.toString());
+        cardapioFrame.add(new JScrollPane(textArea), BorderLayout.CENTER);
+        cardapioFrame.setVisible(true);
     }
 
-    public static void consultarProduto(Scanner sc) {
-        System.out.println("Digite o código do produto para consultar: ");
-        String codigo = sc.nextLine();
+    public void telaCadastroCliente() {
+        JFrame cadastroFrame = new JFrame("Cadastro de Clientes");
+        cadastroFrame.setSize(300, 300);
+        cadastroFrame.setLayout(new GridLayout(0, 2));
 
+        JTextField txtNome = new JTextField();
+        JTextField txtCpf = new JTextField();
+        JTextField txtLogradouro = new JTextField();
+        JTextField txtNumero = new JTextField();
+        JTextField txtComplemento = new JTextField();
+        JTextField txtBairro = new JTextField();
+        JTextField txtCidade = new JTextField();
+        JTextField txtCep = new JTextField();
+        JTextField txtEstado = new JTextField();
+        JTextField txtSexo = new JTextField();
+        JTextField txtTelefone = new JTextField();
+        JTextField txtNascimento = new JTextField();
+
+        cadastroFrame.add(new JLabel("Nome:"));
+        cadastroFrame.add(txtNome);
+        cadastroFrame.add(new JLabel("CPF:"));
+        cadastroFrame.add(txtCpf);
+        cadastroFrame.add(new JLabel("Logradouro:"));
+        cadastroFrame.add(txtLogradouro);
+        cadastroFrame.add(new JLabel("Número:"));
+        cadastroFrame.add(txtNumero);
+        cadastroFrame.add(new JLabel("Complemento:"));
+        cadastroFrame.add(txtComplemento);
+        cadastroFrame.add(new JLabel("Bairro:"));
+        cadastroFrame.add(txtBairro);
+        cadastroFrame.add(new JLabel("Cidade:"));
+        cadastroFrame.add(txtCidade);
+        cadastroFrame.add(new JLabel("CEP:"));
+        cadastroFrame.add(txtCep);
+        cadastroFrame.add(new JLabel("Estado:"));
+        cadastroFrame.add(txtEstado);
+        cadastroFrame.add(new JLabel("Sexo (M/F):"));
+        cadastroFrame.add(txtSexo);
+        cadastroFrame.add(new JLabel("Telefone:"));
+        cadastroFrame.add(txtTelefone);
+        cadastroFrame.add(new JLabel("Nascimento (DD/MM/AAAA):"));
+        cadastroFrame.add(txtNascimento);
+
+        JButton btnSalvar = new JButton("Salvar");
+        btnSalvar.addActionListener(e -> {
+            String nome = txtNome.getText().toUpperCase();
+            String cpf = txtCpf.getText();
+            String logradouro = txtLogradouro.getText();
+            String numero = txtNumero.getText();
+            String complemento = txtComplemento.getText();
+            String bairro = txtBairro.getText();
+            String cidade = txtCidade.getText();
+            String cep = txtCep.getText();
+            String estado = txtEstado.getText();
+            String sexo = txtSexo.getText().toUpperCase();
+            String telefone = txtTelefone.getText();
+            String nascimento = txtNascimento.getText();
+
+            Cliente cliente = new Cliente(nome, cpf, logradouro, numero, complemento, bairro, cidade, cep, estado, sexo, telefone, nascimento, true);
+            clientes.add(cliente);
+            JOptionPane.showMessageDialog(cadastroFrame, "Cliente cadastrado com sucesso!");
+            cadastroFrame.dispose();
+        });
+
+        cadastroFrame.add(btnSalvar);
+        cadastroFrame.setVisible(true);
+    }
+
+    public void alterarProduto() {
+        String codigo = JOptionPane.showInputDialog("Digite o código do produto que deseja alterar:");
         for (String[] produto : produtos) {
-            if (produto[0].equalsIgnoreCase(codigo)) {
-                System.out.println("Produto encontrado:");
-                System.out.println("Código: " + produto[0]);
-                System.out.println("Nome: " + produto[1]);
-                System.out.println("Preço: " + produto[2]);
-                System.out.println("Ativo: " + produto[3]);
+            if (produto[0].equals(codigo)) {
+                String novoNome = JOptionPane.showInputDialog("Novo Nome:", produto[1]);
+                String novoPreco = JOptionPane.showInputDialog("Novo Preço:", produto[2]);
+                produto[1] = novoNome.toUpperCase();
+                produto[2] = novoPreco;
+                JOptionPane.showMessageDialog(null, "Produto alterado com sucesso!");
                 return;
             }
         }
-
-        System.out.println("Produto não encontrado.");
+        JOptionPane.showMessageDialog(null, "Produto não encontrado.");
     }
 
-    public static void excluirProduto(Scanner sc) {
-        System.out.println("Digite o código do produto que deseja excluir: ");
-        String codigo = sc.nextLine();
-
+    public void excluirProduto() {
+        String codigo = JOptionPane.showInputDialog("Digite o código do produto que deseja excluir:");
         for (String[] produto : produtos) {
-            if (produto[0].equalsIgnoreCase(codigo)) {
-                produto[3] = "False"; // Marca o produto como desativado
-                System.out.println("Produto desativado com sucesso.");
+            if (produto[0].equals(codigo)) {
+                produtos.remove(produto);
+                JOptionPane.showMessageDialog(null, "Produto excluído com sucesso!");
                 return;
             }
         }
+        JOptionPane.showMessageDialog(null, "Produto não encontrado.");
+    }
 
-        System.out.println("Produto não encontrado.");
+    public void alterarCliente() {
+        String cpf = JOptionPane.showInputDialog("Digite o CPF do cliente que deseja alterar:");
+        for (Cliente cliente : clientes) {
+            if (cliente.getCpf().equals(cpf)) {
+                String novoNome = JOptionPane.showInputDialog("Novo Nome:", cliente.getNome());
+                cliente.nome = novoNome.toUpperCase();
+                JOptionPane.showMessageDialog(null, "Cliente alterado com sucesso!");
+                return;
+            }
+        }
+        JOptionPane.showMessageDialog(null, "Cliente não encontrado.");
+    }
+
+    public void excluirCliente() {
+        String cpf = JOptionPane.showInputDialog("Digite o CPF do cliente que deseja excluir:");
+        for (Cliente cliente : clientes) {
+            if (cliente.getCpf().equals(cpf)) {
+                clientes.remove(cliente);
+                JOptionPane.showMessageDialog(null, "Cliente excluído com sucesso!");
+                return;
+            }
+        }
+        JOptionPane.showMessageDialog(null, "Cliente não encontrado.");
+    }
+
+    public void consultarClientes() {
+        StringBuilder sb = new StringBuilder("Clientes cadastrados:\n");
+        for (Cliente cliente : clientes) {
+            sb.append(cliente.getNome()).append(" - ").append(cliente.getCpf()).append("\n");
+        }
+        JOptionPane.showMessageDialog(null, sb.toString(), "Consulta de Clientes", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    // Classe Cliente
+    public static class Cliente {
+        private String nome;
+        private String cpf;
+        private String logradouro;
+        private String numero;
+        private String complemento;
+        private String bairro;
+        private String cidade;
+        private String cep;
+        private String estado;
+        private String sexo;
+        private String telefone;
+        private String nascimento;
+        private boolean autorizado;
+
+        public Cliente(String nome, String cpf, String logradouro, String numero, String complemento,
+                       String bairro, String cidade, String cep, String estado, String sexo,
+                       String telefone, String nascimento, boolean autorizado) {
+            this.nome = nome;
+            this.cpf = cpf;
+            this.logradouro = logradouro;
+            this.numero = numero;
+            this.complemento = complemento;
+            this.bairro = bairro;
+            this.cidade = cidade;
+            this.cep = cep;
+            this.estado = estado;
+            this.sexo = sexo;
+            this.telefone = telefone;
+            this.nascimento = nascimento;
+            this.autorizado = autorizado;
+        }
+
+        public String getNome() {
+            return nome;
+        }
+
+        public String getCpf() {
+            return cpf;
+        }
+
+        @Override
+        public String toString() {
+            return "Cliente{" +
+                    "nome='" + nome + '\'' +
+                    ", cpf='" + cpf + '\'' +
+                    ", logradouro='" + logradouro + '\'' +
+                    ", numero='" + numero + '\'' +
+                    ", complemento='" + complemento + '\'' +
+                    ", bairro='" + bairro + '\'' +
+                    ", cidade='" + cidade + '\'' +
+                    ", cep='" + cep + '\'' +
+                    ", estado='" + estado + '\'' +
+                    ", sexo='" + sexo + '\'' +
+                    ", telefone='" + telefone + '\'' +
+                    ", nascimento='" + nascimento + '\'' +
+                    ", autorizado=" + autorizado +
+                    '}';
+        }
     }
 }
