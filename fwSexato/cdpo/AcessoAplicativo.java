@@ -1,6 +1,3 @@
-// Avaliação 3 Parcial sobre GUI - Sistema de Login Simples
-// Desenvolvido por [Seu Nome]
-// Este programa simula um sistema de login simples utilizando GUI em Java.
 
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
