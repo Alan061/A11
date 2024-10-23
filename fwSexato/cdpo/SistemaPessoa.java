@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -31,14 +32,17 @@ public class SistemaPessoa {
 }
 
 class JanelaPrincipal extends JFrame {
+    private ArrayList<Pessoa> pessoas;  // Adiciona a lista de pessoas
+
     public JanelaPrincipal() {
+        this.pessoas = new ArrayList<>();  // Inicializa a lista de pessoas
         setTitle("Sistema de Pessoa");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(600, 400);
         setLocationRelativeTo(null);
 
         // Adiciona o menu
-        setJMenuBar(new MenuPrincipal(this));
+        setJMenuBar(new MenuPrincipal(this, pessoas));
 
         // Adiciona o rodapé
         JLabel rotuloRodape = new JLabel("Versão: 12.1.2024  Usuário: denys.silva  Data de acesso: 20/09/2024 10:58");
@@ -47,12 +51,15 @@ class JanelaPrincipal extends JFrame {
     }
 }
 
+
 class MenuPrincipal extends JMenuBar {
     private JanelaPrincipal janela;
     private ArrayList<Usuario> usuarios = new ArrayList<>();
+    private ArrayList<Pessoa> pessoas;  // Adiciona a lista de pessoas
 
-    public MenuPrincipal(JanelaPrincipal janela) {
+    public MenuPrincipal(JanelaPrincipal janela, ArrayList<Pessoa> pessoas) {
         this.janela = janela;
+        this.pessoas = pessoas;  // Recebe a lista de pessoas
 
         JMenu menuCadastro = new JMenu("Cadastro");
         JMenuItem menuItemUsuarios = new JMenuItem("Cadastro de Usuários");
@@ -83,13 +90,14 @@ class MenuPrincipal extends JMenuBar {
     }
 
     private void abrirCadastroPessoas() {
-        JOptionPane.showMessageDialog(janela, "Cadastro de Pessoas em desenvolvimento.");
+        new JanelaCadastroPessoas(pessoas).setVisible(true);  // Abre a janela de cadastro de pessoas
     }
 
     private void visualizarPessoas() {
         JOptionPane.showMessageDialog(janela, "Visualização de Pessoas em desenvolvimento.");
     }
 }
+
 
 class JanelaCadastroUsuarios extends JFrame {
     private ArrayList<Usuario> usuarios;
@@ -283,18 +291,235 @@ class Usuario {
 
 class Pessoa {
     private String nome;
-    private int idade;
+    private String endereco;
+    private String cidade;
+    private String uf;
+    private String email;
+    private String telefone;
+    private String sexo;
 
-    public Pessoa(String nome, int idade) {
+    public Pessoa(String nome, String endereco, String cidade, String uf, String email, String telefone, String sexo) {
         this.nome = nome;
-        this.idade = idade;
+        this.endereco = endereco;
+        this.cidade = cidade;
+        this.uf = uf;
+        this.email = email;
+        this.telefone = telefone;
+        this.sexo = sexo;
     }
 
     public String getNome() {
         return nome;
     }
 
-    public int getIdade() {
-        return idade;
+    public String getEndereco() {
+        return endereco;
+    }
+
+    public String getCidade() {
+        return cidade;
+    }
+
+    public String getUf() {
+        return uf;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getTelefone() {
+        return telefone;
+    }
+
+    public String getSexo() {
+        return sexo;
     }
 }
+
+class JanelaCadastroPessoas extends JFrame {
+    private ArrayList<Pessoa> pessoas;
+    private JTextField nomeField, enderecoField, cidadeField, ufField, emailField, telefoneField;
+    private JComboBox<String> sexoBox;
+    private JButton botaoIncluir, botaoAlterar, botaoExcluir, botaoConsultar, botaoCancelar, botaoSair;
+    private int pessoaSelecionada = -1;
+
+    public JanelaCadastroPessoas(ArrayList<Pessoa> pessoas) {
+        this.pessoas = pessoas;
+        setTitle("Cadastro de Pessoas");
+        setSize(600, 400);
+        setLocationRelativeTo(null);
+        setLayout(new BorderLayout());
+
+        JPanel panel = new JPanel();
+        panel.setLayout(new GridBagLayout());
+        panel.setBorder(BorderFactory.createTitledBorder("Dados da Pessoa"));
+        panel.setBackground(new Color(240, 240, 240));
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.anchor = GridBagConstraints.WEST;
+
+        // Nome
+        gbc.gridx = 0; gbc.gridy = 0;
+        panel.add(new JLabel("Nome:"), gbc);
+        gbc.gridx = 1; gbc.gridy = 0;
+        nomeField = new JTextField(20);
+        panel.add(nomeField, gbc);
+
+        // Endereço
+        gbc.gridx = 0; gbc.gridy = 1;
+        panel.add(new JLabel("Endereço:"), gbc);
+        gbc.gridx = 1; gbc.gridy = 1;
+        enderecoField = new JTextField(20);
+        panel.add(enderecoField, gbc);
+
+        // Cidade
+        gbc.gridx = 0; gbc.gridy = 2;
+        panel.add(new JLabel("Cidade:"), gbc);
+        gbc.gridx = 1; gbc.gridy = 2;
+        cidadeField = new JTextField(20);
+        panel.add(cidadeField, gbc);
+
+        // UF
+        gbc.gridx = 0; gbc.gridy = 3;
+        panel.add(new JLabel("UF:"), gbc);
+        gbc.gridx = 1; gbc.gridy = 3;
+        ufField = new JTextField(2);
+        panel.add(ufField, gbc);
+
+        // Email
+        gbc.gridx = 0; gbc.gridy = 4;
+        panel.add(new JLabel("Email:"), gbc);
+        gbc.gridx = 1; gbc.gridy = 4;
+        emailField = new JTextField(20);
+        panel.add(emailField, gbc);
+
+        // Telefone
+        gbc.gridx = 0; gbc.gridy = 5;
+        panel.add(new JLabel("Telefone:"), gbc);
+        gbc.gridx = 1; gbc.gridy = 5;
+        telefoneField = new JTextField(15);
+        panel.add(telefoneField, gbc);
+
+        // Sexo
+        gbc.gridx = 0; gbc.gridy = 6;
+        panel.add(new JLabel("Sexo:"), gbc);
+        gbc.gridx = 1; gbc.gridy = 6;
+        sexoBox = new JComboBox<>(new String[]{"Masculino", "Feminino", "Outro"});
+        panel.add(sexoBox, gbc);
+
+        // Painel de Botões
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new FlowLayout());
+        botaoIncluir = new JButton("Incluir");
+        botaoAlterar = new JButton("Alterar");
+        botaoExcluir = new JButton("Excluir");
+        botaoConsultar = new JButton("Consultar");
+        botaoCancelar = new JButton("Cancelar");
+        botaoSair = new JButton("Sair");
+
+        buttonPanel.add(botaoIncluir);
+        buttonPanel.add(botaoAlterar);
+        buttonPanel.add(botaoExcluir);
+        buttonPanel.add(botaoConsultar);
+        buttonPanel.add(botaoCancelar);
+        buttonPanel.add(botaoSair);
+
+        // Ações dos botões
+        botaoIncluir.addActionListener(e -> incluirPessoa());
+        botaoAlterar.addActionListener(e -> alterarPessoa());
+        botaoExcluir.addActionListener(e -> excluirPessoa());
+        botaoConsultar.addActionListener(e -> consultarPessoa());
+        botaoCancelar.addActionListener(e -> limparCampos());
+        botaoSair.addActionListener(e -> dispose());
+
+        // Adiciona tudo à janela
+        add(panel, BorderLayout.CENTER);
+        add(buttonPanel, BorderLayout.SOUTH);
+
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+    }
+
+    private void incluirPessoa() {
+        String nome = nomeField.getText();
+        String endereco = enderecoField.getText();
+        String cidade = cidadeField.getText();
+        String uf = ufField.getText();
+        String email = emailField.getText();
+        String telefone = telefoneField.getText();
+        String sexo = (String) sexoBox.getSelectedItem();
+        pessoas.add(new Pessoa(nome, endereco, cidade, uf, email, telefone, sexo));
+        JOptionPane.showMessageDialog(this, "Pessoa cadastrada com sucesso!");
+        limparCampos();
+    }
+
+    private void alterarPessoa() {
+        if (pessoaSelecionada >= 0) {
+            String nome = nomeField.getText();
+            String endereco = enderecoField.getText();
+            String cidade = cidadeField.getText();
+            String uf = ufField.getText();
+            String email = emailField.getText();
+            String telefone = telefoneField.getText();
+            String sexo = (String) sexoBox.getSelectedItem();
+
+            Pessoa pessoa = pessoas.get(pessoaSelecionada);
+            pessoa.setNome(nome);
+            pessoa.setEndereco(endereco);
+            pessoa.setCidade(cidade);
+            pessoa.setUf(uf);
+            pessoa.setEmail(email);
+            pessoa.setTelefone(telefone);
+            pessoa.setSexo(sexo);
+            JOptionPane.showMessageDialog(this, "Pessoa alterada com sucesso!");
+            limparCampos();
+            pessoaSelecionada = -1;
+        } else {
+            JOptionPane.showMessageDialog(this, "Nenhuma pessoa selecionada para alteração.");
+        }
+    }
+
+    private void excluirPessoa() {
+        if (pessoaSelecionada >= 0) {
+            pessoas.remove(pessoaSelecionada);
+            JOptionPane.showMessageDialog(this, "Pessoa excluída com sucesso!");
+            limparCampos();
+            pessoaSelecionada = -1;
+        } else {
+            JOptionPane.showMessageDialog(this, "Nenhuma pessoa selecionada para exclusão.");
+        }
+    }
+
+    private void consultarPessoa() {
+        String nome = JOptionPane.showInputDialog(this, "Digite o nome da pessoa para consultar:");
+        for (int i = 0; i < pessoas.size(); i++) {
+            Pessoa pessoa = pessoas.get(i);
+            if (pessoa.getNome().equalsIgnoreCase(nome)) {
+                pessoaSelecionada = i;
+                nomeField.setText(pessoa.getNome());
+                enderecoField.setText(pessoa.getEndereco());
+                cidadeField.setText(pessoa.getCidade());
+                ufField.setText(pessoa.getUf());
+                emailField.setText(pessoa.getEmail());
+                telefoneField.setText(pessoa.getTelefone());
+                sexoBox.setSelectedItem(pessoa.getSexo());
+                return;
+            }
+        }
+        JOptionPane.showMessageDialog(this, "Pessoa não encontrada.");
+    }
+
+    private void limparCampos() {
+        nomeField.setText("");
+        enderecoField.setText("");
+        cidadeField.setText("");
+        ufField.setText("");
+        emailField.setText("");
+        telefoneField.setText("");
+        sexoBox.setSelectedIndex(0);
+    }
+}
+
+
+
+
